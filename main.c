@@ -71,7 +71,7 @@ int main(int argc, char *argv[]){
 	ais.n_mejores = ais.psize*0.25; //25% de la población, para seleccionar mejores
 	ais.n_peores = ais.psize*0.25;  //25% de la población, para reemplazar peores
 	ais.Gmax = gmax;
-	randomize(semilla/10);
+	randomize(semilla/10.0);
 
 	alloc_pop(&P, ais.psize);
 	alloc_pop(&Mejores, ais.n_mejores);

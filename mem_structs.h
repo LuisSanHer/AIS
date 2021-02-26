@@ -11,6 +11,7 @@
 /*y con una aptidud*/
 typedef struct{
 	int *x;		//Cadena binaria (Genotipo)
+	int *esp;	//Espectro de Haddamard
 	double f;	//Valor función objetivo (Fenotipo)
 	double NL; //No linealidad
 	double SAC;//Criterio de avalancha estricto cero.

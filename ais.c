@@ -136,6 +136,7 @@ int Mejor_solucion(POBLACION *P){
 	size_t i, index;
   INDIVIDUO *mejor = (INDIVIDUO*)malloc(sizeof(INDIVIDUO));
   mejor->x=(int*)malloc(sizeof(int) * mop.nbin);
+	mejor->esp=(int*)malloc(sizeof(int) * mop.nbin);
   cpy_ind(mejor, &P->ind[0]);
 	index = 0;
 	for(i=0 ; i<P->size ; i++){
@@ -144,6 +145,7 @@ int Mejor_solucion(POBLACION *P){
 			index = i;                  //
 		}
 	}
+	free(mejor->esp);
   free(mejor->x);
   free(mejor);
 	return index;
@@ -161,6 +163,7 @@ void Ordenar(POBLACION *T){
 	size_t i,j;
 	INDIVIDUO *aux = (INDIVIDUO*)malloc(sizeof(INDIVIDUO));
   aux->x=(int*)malloc(sizeof(int) * mop.nbin);
+	aux->esp=(int*)malloc(sizeof(int) * mop.nbin);
 	for(i = 1; i < T->size; i++) {
 		for(j = 0; j < (T->size - i); j++){
 			if(T->ind[j].f > T->ind[j+1].f ){ 		// Ordenamiento en términos
@@ -170,6 +173,7 @@ void Ordenar(POBLACION *T){
 		   }
 		}
 	}
+	free(aux->esp);
   free(aux->x);
   free(aux);
 }

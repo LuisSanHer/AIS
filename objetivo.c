@@ -54,44 +54,38 @@ void fwht_transform(const int *src, int *dst, int n) {
 void NoLinealidad(INDIVIDUO *p){
   int h = 1;
   int x, y;
-  int *aux = (int*)malloc(sizeof(int)*mop.nbin);
-  //Transformada rapida de Walsh Hadamard
-  fwht_transform(p->x, aux, mop.nbin);
+  fwht_transform(p->x, p->esp, mop.nbin);
   //Obtener el maximo valor absoluto, sin tomar en cuenta el primero
   int mayor = 0;
   for (size_t i=1 ; i<mop.nbin ; i++) {
-    if(mayor < iabs(aux[i])){
-      mayor = iabs(aux[i]);
+    if(mayor < iabs(p->esp[i])){
+      mayor = iabs(p->esp[i]);
     }
   }
   //CLARK 2005: ECUACION 6
-  p->NL = - (pow(2, n-1) - mayor); //No linealidad completa sin dividir max R= 112
+  p->NL = -(pow(2, n-1) - mayor); //No linealidad completa sin dividir max R= 112
                                //(CORRECTA) hasta cierto punto...
                                //Es la que se acerca a los resultados de Burnett.
-  free(aux);
 }
 
 void SAC_0(INDIVIDUO *p){
   int w, c, balance;
-  int *aux = (int*)malloc(sizeof(int)*mop.nbin);
-  //Transformada rapida de Walsh Hadamard
-  fwht_transform(p->x, aux, mop.nbin);
   //balance
   balance=0;
   for(w=0; w<mop.nbin; w++){
-    balance += aux[w];
+    balance += p->x[w];
   }
   balance = (balance==(mop.nbin/2))? 1:0;
   if(balance==1){
-    aux[0] = 0;
+    p->esp[0] = 0;
   }
   else{
-    aux[0] = aux[0]-(mop.nbin/2);
+    p->esp[0] = p->esp[0]-(mop.nbin/2);
   }
   //aux^2 ;
   int* aux_2 =(int*)malloc(sizeof(int)*mop.nbin);
   for(w=0; w<mop.nbin; w++){
-    aux_2[w] = aux[w]*aux[w];
+    aux_2[w] = p->esp[w]*p->esp[w];
   }
 
   int i;
@@ -108,7 +102,6 @@ void SAC_0(INDIVIDUO *p){
   }
   //p->SAC = max(0, iabs(Total));
   p->SAC = iabs(Total);
-  free(aux);
   free(aux_2);
 }
 
