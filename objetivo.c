@@ -101,12 +101,12 @@ void SAC_0(INDIVIDUO *p){
     c = c<<1;
   }
   //p->SAC = max(0, iabs(Total));
-  p->SAC = iabs(Total);
+  p->SAC = Total;
   free(aux_2);
 }
 
 void aptitud(INDIVIDUO *p){
-  double e = 0.0005;
-  double v = max(0, (p->SAC-e));
-  p->f = (p->NL)+pow(v,2);
+  double e = 0.0001;
+  double v = max(0, (iabs(p->SAC) - e));
+  p->f = (-p->NL) + pow(v,2);
 }
