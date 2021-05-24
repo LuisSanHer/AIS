@@ -112,7 +112,7 @@ int Calcular_clones(POBLACION *P, int n){
 
 void Display_ind(INDIVIDUO ind){
 	size_t i;
-	printf("  \033[1;41m NL: %.3lf\033[0m", - ind.NL);
+	printf("  \033[1;41m NL: %.3lf\033[0m", ind.NL);
 	printf("  \033[1;41m SAC: %.3lf\033[0m", ind.SAC);
 	printf("  \033[1;41m f: %.3lf\033[0m x: ", - ind.f);
 	for(i=0 ; i<mop.nbin ; i++){
@@ -159,23 +159,17 @@ void Estadisticas(POBLACION *P, size_t i, FILE* file){
 	fprintf(file,"%lf\n", P->ind[mejor].f);
 }
 
-void Ordenar(POBLACION *T){
-	size_t i,j;
-	INDIVIDUO *aux = (INDIVIDUO*)malloc(sizeof(INDIVIDUO));
-  aux->x=(int*)malloc(sizeof(int) * mop.nbin);
-	aux->esp=(int*)malloc(sizeof(int) * mop.nbin);
-	for(i = 1; i < T->size; i++) {
-		for(j = 0; j < (T->size - i); j++){
-			if(T->ind[j].f > T->ind[j+1].f ){ 		// Ordenamiento en términos
-         cpy_ind(aux, &T->ind[j]);          // minimización.
-			   cpy_ind(&T->ind[j], &T->ind[j+1]);	//
-			   cpy_ind(&T->ind[j+1], aux);
-		   }
-		}
-	}
-	free(aux->esp);
-  free(aux->x);
-  free(aux);
+int compare(const void *_a, const void *_b){
+	INDIVIDUO *a = (INDIVIDUO *) _a;
+	INDIVIDUO *b = (INDIVIDUO *) _b;
+	if(a->f < b->f)
+		return 0;
+	else
+		return 1;
+}
+
+void Ordenar(POBLACION *T) {
+	qsort(T->ind,T->size,sizeof(INDIVIDUO),&compare);
 }
 
 void Unir_poblaciones(POBLACION *P, POBLACION *Clones, POBLACION *Q){
