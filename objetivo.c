@@ -107,6 +107,6 @@ void SAC_0(INDIVIDUO *p){
 
 void aptitud(INDIVIDUO *p){
   double e = 0.0001;
-  double v = max(0, (iabs(p->SAC) - e));
+  double v = max(0.0, (iabs(p->SAC) - e));
   p->f = (-p->NL) + pow(v,2);
 }

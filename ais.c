@@ -46,6 +46,33 @@ void Seleccionar(POBLACION *P, POBLACION *Mejores, int n){
 	}
 }
 
+double rule_3(double aux_afin, double best_afin, char metodo){
+	if (metodo == 'd') {
+		if (aux_afin<0) {
+			return (aux_afin * ais.psize)/(2*best_afin);
+		}else{
+			return 1;
+		}
+	}else if (metodo == 'i') {
+		if (aux_afin<0) {
+			return best_afin/(mop.nbin*aux_afin);
+		}else{
+			return 0.3;
+		}
+	}
+}
+
+int Calcular_clones(POBLACION *Mejores, int n){
+  int cant_clones=0.0, tmp = 0;
+  float best_afin = Mejores->ind[0].f, aux_afin=0.0;
+  for (size_t i=0 ; i<n ; i++) {
+    aux_afin = Mejores->ind[i].f;
+		tmp = (int)rule_3(aux_afin, best_afin, 'd');
+    cant_clones += tmp;
+  }
+  return cant_clones;
+}
+
 void Clonacion(POBLACION *Mejores, POBLACION *Clones){
   int count=0, k=0;
 	// Calcular cuantos clones serán creados
@@ -56,7 +83,7 @@ void Clonacion(POBLACION *Mejores, POBLACION *Clones){
   float best_afin = Mejores->ind[0].f, aux_afin=0.0;
   for (size_t i=0 ; i<Mejores->size ; i++) {
     aux_afin = Mejores->ind[i].f;
-    count = (ais.psize/2)/(aux_afin-best_afin+1);
+		count = (int)rule_3(aux_afin, best_afin, 'd');
     for (size_t j=0 ; j<count ; j++) {
       cpy_ind(&Clones->ind[k], &Mejores->ind[i]);
       k++;
@@ -67,12 +94,11 @@ void Clonacion(POBLACION *Mejores, POBLACION *Clones){
 void Hipermutacion(POBLACION *Clones){
 	size_t i, n = Clones->size;
   double Pm = 0.0;
-  double worst_afin = Clones->ind[n-1].f;
 	double best_afin = Clones->ind[0].f;
 	double aux_afin=0.0;
 	for(i=0 ; i<n ; i++){ //Para todos los individuos
 		aux_afin = Clones->ind[i].f;
-		Pm = (aux_afin*(1.0/mop.nbin))/best_afin;
+		Pm = rule_3(aux_afin, best_afin, 'i');
 		bit_wise_mutation(&Clones->ind[i], Pm); //Mutar bit a bit
 	}
 }
@@ -86,6 +112,12 @@ void bit_wise_mutation(INDIVIDUO *A, double Pm){
 	}
 }
 
+void Autorregulacion(POBLACION *P, POBLACION *Q, POBLACION *Clones){
+	Unir_poblaciones(P, Clones, Q);
+	Seleccionar(Q, P, ais.psize); //Seleccionar los n mejores anticuerpos de Q y guardarlos en P.
+	Reemplazar(P, ais.n_peores);
+}
+
 void Reemplazar(POBLACION *P, int n){
 	size_t x = P->size - n;
 	for (size_t i=x ; i<P->size ; i++) {
@@ -97,17 +129,6 @@ void Reemplazar(POBLACION *P, int n){
 			}
 		}
 	}
-}
-
-int Calcular_clones(POBLACION *P, int n){
-  int cant_clones=0, tmp = 0;
-  float best_afin = P->ind[0].f, aux_afin=0.0;
-  for (size_t i=0 ; i<n ; i++) {
-    aux_afin = P->ind[i].f;
-    tmp = (ais.psize/2)/(aux_afin-best_afin+1);
-    cant_clones += tmp;
-  }
-  return cant_clones;
 }
 
 void Display_ind(INDIVIDUO ind){
@@ -156,7 +177,7 @@ void Estadisticas(POBLACION *P, size_t i, FILE* file){
 	printf("\033[1;44mGeneración: %.3zu\033[0m", i);
 	mejor = Mejor_solucion(P);
 	Display_ind(P->ind[mejor]);
-	fprintf(file,"%lf\n", P->ind[mejor].f);
+	fprintf(file,"%lf\n", - P->ind[mejor].f);
 }
 
 int compare(const void *_a, const void *_b){
