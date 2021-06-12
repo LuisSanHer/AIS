@@ -100,6 +100,9 @@ void Hipermutacion(POBLACION *Clones){
 		aux_afin = Clones->ind[i].f;
 		Pm = rule_3(aux_afin, best_afin, 'i');
 		bit_wise_mutation(&Clones->ind[i], Pm); //Mutar bit a bit
+		NoLinealidad(&Clones->ind[i]); //Calcular la NoLinealidad.
+		SAC_0(&Clones->ind[i]);				//Calcular el criterio de avalancha estricto.
+		aptitud(&Clones->ind[i]);      //Calcular aptitud respecto al SAC y NL (restricciones).
 	}
 }
 
@@ -112,13 +115,35 @@ void bit_wise_mutation(INDIVIDUO *A, double Pm){
 	}
 }
 
+int checkrep(int n, int num[]){
+    for(int i=0; i<ais.psize; i++)
+        if(n == num[i])
+            return 0;
+    return 1;
+}
+
 void Autorregulacion(POBLACION *P, POBLACION *Q, POBLACION *Clones){
+	int indices[ais.psize];
 	Unir_poblaciones(P, Clones, Q);
-	Seleccionar(Q, P, ais.psize); //Seleccionar los n mejores anticuerpos de Q y guardarlos en P.
+	size_t i;
+	for(i=0 ; i<ais.psize ; i++){
+		if(i<(ais.psize*0.70)){
+			cpy_ind(&P->ind[i], &Q->ind[i]);
+			indices[i] = i;
+		}else{
+			int aux=0;
+			do{
+				aux = rand()%Q->size;
+			}while(!checkrep(aux, indices));
+			indices[i] = aux;
+			cpy_ind(&P->ind[i], &Q->ind[aux]);
+		}
+	}
 	Reemplazar(P, ais.n_peores);
 }
 
 void Reemplazar(POBLACION *P, int n){
+	Ordenar(P);
 	size_t x = P->size - n;
 	for (size_t i=x ; i<P->size ; i++) {
 		for(size_t j=0 ; j<mop.nbin ; j++){ //Generar nuevo
@@ -128,6 +153,9 @@ void Reemplazar(POBLACION *P, int n){
 				P->ind[i].x[j] = 1;
 			}
 		}
+		NoLinealidad(&P->ind[i]);
+		SAC_0(&P->ind[i]);
+		aptitud(&P->ind[i]);
 	}
 }
 

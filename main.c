@@ -13,7 +13,20 @@ MOP mop;
 AIS ais;
 int n;
 
+/*
+set title 'Convergencia de la media (n=3)'
+set grid
+set autoscale
+set xlabel 'Generaciones'
+set ylabel 'Valor de aptitud'
+set key bottom
+plot 'MediaN3.txt' u 1:2 w lp lt 1 lw 2 t "Genetico Simple", 'MediaN3.txt' u 1:3 w lp lt 2 lw 3 t "Genetico elitismo", 'MediaN3.txt' u 1:4 w lp lt 3 lw 2 t "Genetico Miu+Lambda", 'MediaN3.txt' u 1:5 w lp lt 4 lw 3 t "SIA"
+*/
+
+
+
 int main(int argc, char *argv[]){
+	srand(time(NULL));
 
 	POBLACION P,Q,Clones, Mejores;
 	size_t i=0;
@@ -82,7 +95,6 @@ int main(int argc, char *argv[]){
 	  Seleccionar(&P, &Mejores, ais.n_mejores); //Seleccionar los n mejores anticuerpos.
 	  Clonacion(&Mejores, &Clones); //Clonación directamente proporcional a la aptitud.
 	  Hipermutacion(&Clones); //Mutación inversamente proporcional a la aptitud.
-	  Evaluacion(&Clones);  //Calcular la afinidad vs el antígeno de los anticuerpos clonados y mutados.
 		Autorregulacion(&P, &Q, &Clones); //Unir P con Clones, ordenar por aptitud y reemplazar los peores por aleatorios
 		Estadisticas(&P, i, file);
 
