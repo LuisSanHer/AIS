@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
 
 	alloc_pop(&P, ais.psize);
 	alloc_pop(&Mejores, ais.n_mejores);
-	FILE* file = fopen("experimento.txt", "w");
+	FILE* file = fopen("Experimentos/experimento.txt", "w");
 	Inicializar(&P); //Generar población inicial de anticuerpos aleatoriamente.
 	for(i=0 ; i<ais.Gmax ; i++){
 	  Evaluacion(&P);  //Presentar el antígeno y calcular la afinidad del anticuerpo por el antígeno.
